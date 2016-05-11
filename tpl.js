@@ -23,7 +23,7 @@ function tpl(_req, _res) {
 		'scriptTag' 	: new Array('<%', '%>'),
 		'includeTag'	: new Array('<!--include file=', '-->'),
 		'scriptFolder'	: new RegExp('^(\\/|\\/manage\\/)\\w+\\.(asp|node)$', 'i'),
-		'cacheSuffix'	: new RegExp('\\.(jpg|gif|png)$', 'i'),
+		'cacheSuffix'	: new RegExp('\\.(js|css|jpg|gif|png)$', 'i'),
 		'upfileSuffix'	: new RegExp('^(rar|zip|jpg|jpeg|gif|png)$', 'i'),
 		'upfileNotCode'	: new RegExp('(eval|execute|function|form|querystring)', 'i')
 	};
