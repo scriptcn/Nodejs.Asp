@@ -209,7 +209,7 @@ function tpl(_req, _res) {
 		}
 		function exit(str) {
 			if(str) re.push(str);
-			re.push("{{{{end}}}}");//这里有问题，要考虑多重条件下的end
+			re.push("{{{{end}}}}");
 		}
 		function echo () {
 			var args = arguments, i = 0;
