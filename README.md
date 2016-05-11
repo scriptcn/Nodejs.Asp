@@ -1,4 +1,3 @@
-<div class="main">
 <h2>什么是<label>Nodejs.Asp</label>？</h2>
 <div class='pre'>
 <label>Nodejs.Asp</label>是基于Nodejs开发的WEB服务器，支持或模拟大部分ASP（JScript.asp）的结构、语法风格。但绝不等同于Microsoft ASP。
@@ -93,7 +92,8 @@ NODEJS.ASP
 	不支持异步调用回调函数输出到页面，支持console输出到控制台。建议使用同步操作。
 </div>
 <h3>感谢您的阅读！</h3>
-biyuan
-22775114@qq.com
-2016.05.11 12:52
-<div>
+<ul>
+<li>biyuan</li>
+<li>22775114@qq.com</li>
+<li>2016.05.11 12:52</li>
+</ul>
