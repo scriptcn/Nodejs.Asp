@@ -70,7 +70,7 @@ NODEJS.ASP
 		<dd>echo("string%sNumber%s", 'a', 1);	//输出，支持%s变量替换</dd>
 		<dd>clear();	//同Response.Clear</dd>
 		<dd>exit();	//同Response.End</dd>
-		<dd>Sys.date();	//服务器事件</dd>
+		<dd>Sys.date();	//服务器时间</dd>
 		<dd>Sys.md5(str);	//md5</dd>
 		<dd>Sys.guid();	//获取一个唯一值</dd>
 		<dd>Sys.?更多扩展可参考源码</dd>
