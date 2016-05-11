@@ -259,7 +259,7 @@ function Upload (spt, cfg, callBack) {
 			_this.Form[keyName].push({
 				'FileName' : fileName[1],
 				'Suffix' : fileName[2],
-				'Content-Type' : headStr.match(/Content-Type:\s([\w\/]+)/)[1],
+				'Content-Type' : headStr.match(/Content-Type:\s([\w\/-]+)/)[1],
 				'saveFileName' : saveFileName,
 				'FilePath' : nowFilePath
 			});
