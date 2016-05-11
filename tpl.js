@@ -134,7 +134,7 @@ function tpl(_req, _res) {
 			}
 			return _callBack({
 				'code' : 200, 
-				'head' : {'Content-Type' : Sys.type(file), '__PageData__.cache-Control' : 'no-__PageData__.cache'},
+				'head' : {'Content-Type' : Sys.type(file), 'cache-Control' : 'no-cache'},
 				'body' : data
 			});
 		});
