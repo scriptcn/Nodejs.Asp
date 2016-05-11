@@ -4,7 +4,8 @@ var fs = require('fs'),
 	url = require('url'),
 	crypto = require('crypto'),
 	query = require('querystring'),
-	__PageData__ = {
+	path = require('path'),
+	_PAGE_ = {
 		'cache' : {},
 		'sess' : {},
 		'memory' : {}
@@ -13,16 +14,16 @@ var fs = require('fs'),
 function tpl(_req, _res) {
 	var req = _req, res = _res, sys, callBack, file, _this = this, sys = Sys;
 	var cfg = {
-		'rootPath' 	: '.\\',
-		'upfilePath'	: '.\\upfile\\',
+		'rootPath' 	: './',
+		'upfilePath'	: './upfile/',
 		'serverName'	: 'BiyuanWebserver',
 		'minSource'	: false,
 		'indexPage'	: '/index.asp',
 		'notSuffix'	: '.asp',
-		'contentMax'	: 100 * 1024 * 1024,
+		'contentMax'	: 2 * 1024 * 1024,
 		'scriptTag' 	: new Array('<%', '%>'),
 		'includeTag'	: new Array('<!--include file=', '-->'),
-		'scriptFolder'	: new RegExp('^(\\/|\\/manage\\/)\\w+\\.(asp|node)$', 'i'),
+		'scriptFolder'	: new RegExp('^(manage\\\\)?\\w+\\.(asp|node)$', 'i'),//linux is '\/'
 		'cacheSuffix'	: new RegExp('\\.(js|css|jpg|gif|png)$', 'i'),
 		'upfileSuffix'	: new RegExp('^(rar|zip|jpg|jpeg|gif|png)$', 'i'),
 		'upfileNotCode'	: new RegExp('(eval|execute|function|form|querystring)', 'i')
@@ -56,10 +57,12 @@ function tpl(_req, _res) {
 		var urls = url.parse(req.url, true);
 		file = urls.pathname == '/' ? cfg.indexPage : urls.pathname;
 		/^\/([^\/]+\/)?(\w+)$/.test(file) && (file += cfg.notSuffix);
+		file = Sys.realPath(cfg.rootPath, file);
 		if(req.headers['content-length'] > cfg.contentMax) {
-			return _Output({
-				'code' : 200,
-				'body' : 'Information is too long'
+			req.Form = {'error' : 'Information is too long'}
+			return _LoadPage(function(rBody) {
+				console.log("%s\t%s\t%s\t%s", Sys.date(), Sys.addr(req), req.url, req.Form.error);
+				return _Output(rBody);
 			});
 		}
 		req.QueryString = urls.query;
@@ -69,29 +72,21 @@ function tpl(_req, _res) {
 				var upload = new Upload(RegExp.$1, cfg, function(rbody){
 					isDestroy = rbody;	
 				});
-				req.on('data', function(chunk){
-					/*
-					if(isDestroy) {
-						return _Output({
-							'code' : 200,
-							'body' : isDestroy
-						});
-					} else {
-					*/
-						upload.SaveFile(chunk);
-					//}
-				});
-				req.on('end', function(){
-					if(isDestroy) {
-						req.Form = isDestroy;	
-					} else {
-						req.Form = upload.Form;	
-					}
+				function _onEnd() {
+					req.Form = isDestroy || upload.Form;
 					upload = null;
 					return _LoadPage(function(rBody) {
+						console.log("%s\t%s\t%s\t%s", Sys.date(), Sys.addr(req), req.url, req.Form.error);
 						return _Output(rBody);
 					});
+				}
+				req.on('data', function(chunk){
+					if(isDestroy) {
+						return _onEnd();
+					}
+					upload.SaveFile(chunk);
 				});
+				req.on('end', _onEnd);
 			} else {
 				var postdata = "";
 				req.on("data", function(chunk){
@@ -112,11 +107,11 @@ function tpl(_req, _res) {
 	}
 	
 	function _LoadPage(_callBack) {
-		if(__PageData__.cache[file]) {
+		if(_PAGE_.cache[file]) {
 			return _callBack({
 				'code' : 200,
 				'head' : {'Content-Type' : Sys.type(file)},
-				'body' : __PageData__.cache[file]
+				'body' : _PAGE_.cache[file]
 			});
 		}
 		if(/[^\w]+$/.test(file)) {
@@ -124,7 +119,7 @@ function tpl(_req, _res) {
 				'body' : '404: File Not Found'
 			});
 		}
-		fs.readFile(cfg.rootPath + file, function(err, data) {
+		fs.readFile(file, function(err, data) {
 			if(err) {
 				return _callBack({
 					'body' : '404: File Not Found'
@@ -135,7 +130,7 @@ function tpl(_req, _res) {
 				data = _Parse(data.toString());	
 			}
 			if(cfg.cacheSuffix.test(file)) {
-				__PageData__.cache[file] = data;
+				_PAGE_.cache[file] = data;
 			}
 			return _callBack({
 				'code' : 200, 
@@ -155,7 +150,7 @@ function tpl(_req, _res) {
 			if(k && !v) { return re[k] || '';}
 			if(v) {
 				v = v == 'del' ? '' : v;
-				Res.setHeader({'Set-Cookie' : [k + '=' + v]});
+				Res.setHeaders({'Set-Cookie' : [k + '=' + v]});
 			}
 			return k ? (re[k] || '') : re;
 		}
@@ -163,34 +158,34 @@ function tpl(_req, _res) {
 	
 	function _Session(_Cookies) {
 		var id = _Cookies('SessionID') || _Cookies('SessionID', Sys.md5(Sys.guid()));
-		__PageData__.sess[id] = __PageData__.sess[id] || {};
+		_PAGE_.sess[id] = _PAGE_.sess[id] || {};
 		return function(k, v, d) {
 			if(d == 'del') {
-				return k ? (delete __PageData__.sess[id][k]) : (delete __PageData__.sess[id], _Cookies('SessionID', '', 'del'));
+				return k ? (delete _PAGE_.sess[id][k]) : (delete _PAGE_.sess[id], _Cookies('SessionID', '', 'del'));
 			}
 			if(!v) {
-				return __PageData__.sess[id][k];
+				return _PAGE_.sess[id][k];
 			} else {
-				__PageData__.sess[id][k] = v;
+				_PAGE_.sess[id][k] = v;
 			}
 		}
 	}
 
 	function _Application(k, v, d) {
 		if(d == 'del') {
-			return k ? delete __PageData__.memory[k] : __PageData__.memory = {};
+			return k ? delete _PAGE_.memory[k] : _PAGE_.memory = {};
 		}
 		if(!v) {
-			return __PageData__.memory[k];
+			return _PAGE_.memory[k];
 		} else {
-			__PageData__.memory[k] = v;
+			_PAGE_.memory[k] = v;
 		}
 	}
 	
 	function _Parse(data) {
 		var re = [], sTag = cfg.scriptTag, iTag = cfg.includeTag;
 		var Request = req, Response = res, head = {};
-		Response.setHeader = function(setHead) {
+		Response.setHeaders = function(setHead) {
 			if(setHead['Set-Cookie']) {
 				head['Set-Cookie'] = head['Set-Cookie'] || [];
 				head['Set-Cookie'] = head['Set-Cookie'].concat(setHead['Set-Cookie']);
@@ -208,13 +203,14 @@ function tpl(_req, _res) {
 		Response.Write = echo;
 		Response.Clear = clear;
 		Response.End = exit;
+		var endLine = '#' + Sys.md5(Sys.guid()) + '#';
 		
 		function clear() {
 			re.length = 0;
 		}
 		function exit(str) {
 			if(str) re.push(str);
-			re.push("{{{{end}}}}");	//这个地方还需要斟酌
+			re.push(endLine);
 		}
 		function echo () {
 			var args = arguments, i = 0;
@@ -235,7 +231,7 @@ function tpl(_req, _res) {
 		}
 		re = re.join('');
 		_SetHeader({'head' : head});
-		return (cfg.minSource ? re.replace(/\r\n|\t/g, '') : re).split("{{{{end}}}}")[0];
+		return (cfg.minSource ? re.replace(/\r\n|\t/g, '') : re).split(endLine)[0];
 	}
 }
 //upload
@@ -256,15 +252,15 @@ function Upload (spt, cfg, callBack) {
 		if(fileRegx.test(headStr)) {
 			var fileName = headStr.match(fileRegx);
 			if(!notFix.test(fileName[2])) {
-				callBack({'error' : 'Upload is error{002}!'});
-				//return false;
+				callBack({'error' : 'Upload is error{002}'});
+				return false;
 			}
 			var saveFileName = Sys.md5(Sys.guid());
-			nowFilePath = path + saveFileName + "." + fileName[2];
+			nowFilePath = Sys.realPath(path, saveFileName + "." + fileName[2]);
 			_this.Form[keyName].push({
 				'FileName' : fileName[1],
 				'Suffix' : fileName[2],
-				'Content-Type' : headStr.match(/Content-Type:\s([\w\/-]+)/)[1],
+				'Content-Type' : headStr.match(/Content-Type:\s([\w\/]+)/)[1],
 				'saveFileName' : saveFileName,
 				'FilePath' : nowFilePath
 			});
@@ -303,8 +299,8 @@ function Upload (spt, cfg, callBack) {
 			return _this.Form[nowFilePath].push(chunk);
 		} else {
 			if(notCode.test(chunk.toString())) {
-				callBack({'error' : 'Upload is error{009}!'});
-				//return false;
+				callBack({'error' : 'Upload is error{009}'});
+				return false;
 			}
 			return fs.appendFileSync(nowFilePath, chunk);
 		}
@@ -360,6 +356,10 @@ var Sys = {
 				 v = c == 'x' ? r : (r & 0x3 | 0x8);
 			 return v.toString(16);
 		}).toUpperCase();
+	},
+	
+	'realPath' : function(rootPath, filePath) {
+		return path.join(rootPath, path.normalize(filePath.replace(/\.\./g, '')));
 	},
 	
 	'type' : function(s) {
