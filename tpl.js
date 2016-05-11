@@ -209,7 +209,7 @@ function tpl(_req, _res) {
 		}
 		function exit(str) {
 			if(str) re.push(str);
-			re.push("{{{{end}}}}");
+			re.push("{{{{end}}}}");	//这个地方还需要斟酌
 		}
 		function echo () {
 			var args = arguments, i = 0;
