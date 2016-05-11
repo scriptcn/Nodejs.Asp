@@ -119,6 +119,11 @@ function tpl(_req, _res) {
 				'body' : __PageData__.cache[file]
 			});
 		}
+		if(/[^\w]+$/.test(file)) {
+			return _callBack({
+				'body' : '404: File Not Found'
+			});
+		}
 		fs.readFile(cfg.rootPath + file, function(err, data) {
 			if(err) {
 				return _callBack({
