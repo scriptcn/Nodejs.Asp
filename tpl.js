@@ -45,7 +45,7 @@ function tpl(_req, _res) {
 	function _Output(input) {
 		_SetHeader(input);
 		if(header.code != 200) {
-			console.log("%s\t%s\t%s\t%s", Sys.date(), Sys.addr(req), req.url, input.body);
+			Sys.log("%s\t%s\t%s\t%s", Sys.date(), Sys.addr(req), req.url, input.body);
 		}
 		res.writeHead(header.code, header.head);
 		res.end(input.body);
@@ -61,7 +61,7 @@ function tpl(_req, _res) {
 		if(req.headers['content-length'] > cfg.contentMax) {
 			req.Form = {'error' : 'Information is too long'}
 			return _LoadPage(function(rBody) {
-				console.log("%s\t%s\t%s\t%s", Sys.date(), Sys.addr(req), req.url, req.Form.error);
+				Sys.log("%s\t%s\t%s\t%s", Sys.date(), Sys.addr(req), req.url, req.Form.error);
 				return _Output(rBody);
 			});
 		}
@@ -76,7 +76,7 @@ function tpl(_req, _res) {
 					req.Form = isDestroy || upload.Form;
 					upload = null;
 					return _LoadPage(function(rBody) {
-						console.log("%s\t%s\t%s\t%s", Sys.date(), Sys.addr(req), req.url, req.Form.error);
+						Sys.log("%s\t%s\t%s\t%s", Sys.date(), Sys.addr(req), req.url, req.Form.error);
 						return _Output(rBody);
 					});
 				}
@@ -126,7 +126,7 @@ function tpl(_req, _res) {
 				});
 			}
 			if(cfg.scriptFolder.test(file)) {
-				console.log("%s\t%s\t%s\t%s", Sys.date(), Sys.addr(req), req.url, req.method);
+				Sys.log("%s\t%s\t%s\t%s", Sys.date(), Sys.addr(req), req.url, req.method);
 				data = _Parse(data.toString());	
 			}
 			if(cfg.cacheSuffix.test(file)) {
@@ -220,10 +220,10 @@ function tpl(_req, _res) {
 		}
 		try {
 			eval(data.replace(new RegExp(iTag[0] + '(\'|")([^\'"]+)\\1;?' + iTag[1], 'gi'), function(a, b, c){
-				return fs.readFileSync(cfg.rootPath + c);
+				return fs.readFileSync(Sys.realPath(cfg.rootPath, c));
 			}).replace(new RegExp(sTag[0] + '=([^;%]+);?' + sTag[1] + '|{\\$([^;}]+);?}', 'g'), function(a, b, c) {
 				return "<%echo(" + (b || c) + ");%>";
-			}).replace(new RegExp('(^|' + sTag[1] + ')([\\s\\S]*?)(' + sTag[0] + '|$)', 'g'), function(a, b, c) {
+			}).replace(new RegExp('(^|' + sTag[1] + ')([\\s\\S]*?)[\\r\\n]*(' + sTag[0] + '|$)', 'g'), function(a, b, c) {
 				return !c ? '' : 'echo("' + c.replace(/"/g, '\\"').replace(/\r\n/g, '\\r\\n') + '");';
 			}));
 		} catch(e) {
@@ -360,6 +360,16 @@ var Sys = {
 	
 	'realPath' : function(rootPath, filePath) {
 		return path.join(rootPath, path.normalize(filePath.replace(/\.\./g, '')));
+	},
+	
+	'log' : function() {
+		var args = arguments, i = 0;
+		var s = !args[1] ? args[0] : args[0].replace(/%s/g, function() {
+			return args[++ i];
+		});
+		fs.writeFile('../tpl.log', s + '\r\n', {'flag' : 'a'}, function(e, r) {
+			return console.log(s);
+		});
 	},
 	
 	'type' : function(s) {

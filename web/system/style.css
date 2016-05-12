@@ -1,19 +1,19 @@
 * {font-family:Times New Roman;}
-body {width:100%;margin:0;padding:0;text-align:center;}
+body {width:100%;margin:0;padding:0;text-align:center;font-size:18px;}
 select, input {font-size:18px;}
 ul, li {margin:0;padding:0;}
 li {list-style:none;}
 a:active, a:link, a:visited {text-decoration:none;color:#3366cc;}
 a:hover {text-decoration: underline;color:red;}
-.head {height:60px;padding:5px;width:80%;text-align:left;margin:auto;background:url(../images/logo.png) no-repeat right center;}
-.head h1 {margin:0;padding:0;font-size:28px;line-height:60px;}
+.head {height:70px;padding:5px;width:80%;text-align:left;margin:auto;background:url(../images/logo.png) no-repeat right;}
+.head h1 {margin:0;padding:0;font-size:28px;line-height:70px;background:url(../images/node.png) no-repeat right 200px center;}
 .menu {background:#f1f1f1;height:50px;margin:10px auto;padding:5px auto;border-bottom:1px solid #ddd;}
 .menu ul {width:80%;text-align:left;margin:0 auto;}
 .menu li {float:left;line-height:50px;padding-right:20px;font-size:17px;border-left:2px solid #ddd;text-indent:20px;font-weight:bold;}
 .menu .r {border-right:2px solid #ddd;}
 .main {width:80%;text-align:left;margin:0 auto 10px;}
 .foot {text-align:center;line-height:50px;background:#f3f3f3;font-size:11px;border-top:1px solid #ddd;}
-.pre {margin:0;background:#f9f9f9;border:1px solid #ddd;padding:5px;}
+.pre {margin:0;background:#f9f9f9;border:1px solid #ddd;padding:5px;line-height:150%;}
 dl, dt, dd {margin:0;padding:0}
 dt {color:blue;line-height:50px;font-size:18px;}
 dd {margin:5px 30px;background:#f3f3f3;padding:5px;list-style:none;}

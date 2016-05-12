@@ -5,7 +5,6 @@ var Name = "关于";
 <!DOCTYPE html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<script type="text/javascript" src="http://libs.baidu.com/jquery/1.9.0/jquery.js"></script>
 <title>{$Title} - <%=Name%></title>
 <link type="text/css" rel="stylesheet" href="system/style.css" />
 </head>
@@ -20,30 +19,30 @@ var Name = "关于";
 <div class='pre'>
 和大多Script后端语言一样，在工作目录建立.asp或.node文件即可，支持ssi，支持无后缀名映射，支持静态文件缓存。<br />
 <pre style="font-size:16px;font-family:Fixedsys;line-height:16px;">
-NODEJS.ASP
-│
-│  server.js
-│  start.bat
-│  tpl.js
-│  
-└─web
-    │  favicon.ico
-    │  foot.html
-    │  form.node
-    │  head.html
-    │  index.asp
-    │  list.node
-    │  upload.asp
-    │  
-    ├─images
-    │      logo.png
-    │      
-    ├─system
-    │      form.js
-    │      style.css
-    │      system.js
-    │      
-    └─upfile
+    Nodejs.Asp
+	│
+	│  server.js
+	│  start.bat
+	│  tpl.js
+	│  
+	└─web
+	    │  favicon.ico
+	    │  foot.html
+	    │  form.node
+	    │  head.html
+	    │  index.asp
+	    │  list.node
+	    │  upload.asp
+	    │  
+	    ├─images
+	    │      logo.png
+	    │      
+	    ├─system
+	    │      form.js
+	    │      style.css
+	    │      system.js
+	    │      
+	    └─upfile
 </pre>
 </div>
 <h2><label>Nodejs.Asp</label>如何编码？</h2>

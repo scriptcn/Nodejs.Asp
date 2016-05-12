@@ -14,7 +14,6 @@ if(Request.method == "POST") {
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<script type="text/javascript" src="http://libs.baidu.com/jquery/1.9.0/jquery.js"></script>
 <link type="text/css" rel="stylesheet" href="system/style.css" />
 <title>{$Title} - <%=Name%></title>
 <style type="text/css">
