@@ -1,3 +1,3 @@
 @echo off
-..\..\node server.js
+..\node server.js
 pause

@@ -10,6 +10,7 @@ var fs = require('fs'),
 		'sess' : {},
 		'memory' : {}
 	};
+	//runInNewContext
 //tpl
 function tpl(_req, _res) {
 	var req = _req, res = _res, sys, callBack, file, _this = this, sys = Sys;
@@ -58,46 +59,48 @@ function tpl(_req, _res) {
 		file = urls.pathname == '/' ? cfg.indexPage : urls.pathname;
 		/^\/([^\/]+\/)?(\w+)$/.test(file) && (file += cfg.notSuffix);
 		file = Sys.realPath(cfg.rootPath, file);
-		if(req.headers['content-length'] > cfg.contentMax) {
-			req.Form = {'error' : 'Information is too long'}
-			return _LoadPage(function(rBody) {
-				Sys.log("%s\t%s\t%s\t%s", Sys.date(), Sys.addr(req), req.url, req.Form.error);
-				return _Output(rBody);
-			});
-		}
 		req.QueryString = urls.query;
 		if(req.method == 'POST') {
-			if(/^multipart\/form-data; boundary=(.+)$/.test(req.headers['content-type'])) {
-				var isDestroy = false;
-				var upload = new Upload(RegExp.$1, cfg, function(rbody){
-					isDestroy = rbody;	
+			if(req.headers['content-length'] > cfg.contentMax) {
+				req.Form = {'error' : 'Information is too long'}
+				return _LoadPage(function(rBody) {
+					req.destroy();
+					Sys.log("%s\t%s\t%s\t%s", Sys.date(), Sys.addr(req), req.url, req.Form.error);
+					return _Output(rBody);
 				});
-				function _onEnd() {
-					req.Form = isDestroy || upload.Form;
-					upload = null;
-					return _LoadPage(function(rBody) {
-						Sys.log("%s\t%s\t%s\t%s", Sys.date(), Sys.addr(req), req.url, req.Form.error);
-						return _Output(rBody);
+			} else {
+				if(/^multipart\/form-data; boundary=(.+)$/.test(req.headers['content-type'])) {
+					var isDestroy = false;
+					var upload = new Upload(RegExp.$1, cfg, function(rbody){
+						isDestroy = rbody;	
+					});
+					function _onEnd() {
+						req.Form = isDestroy || upload.Form;
+						upload = null;
+						return _LoadPage(function(rBody) {
+							Sys.log("%s\t%s\t%s\t%s", Sys.date(), Sys.addr(req), req.url, req.Form.error);
+							return _Output(rBody);
+						});
+					}
+					req.on('data', function(chunk){
+						if(isDestroy) {
+							return _onEnd();
+						}
+						upload.SaveFile(chunk);
+					});
+					req.on('end', _onEnd);
+				} else {
+					var postdata = "";
+					req.on("data", function(chunk){
+						postdata += chunk;
+					});
+					req.on("end", function(){
+						req.Form = query.parse(postdata);
+						return _LoadPage(function(rBody) {
+							return _Output(rBody);
+						});
 					});
 				}
-				req.on('data', function(chunk){
-					if(isDestroy) {
-						return _onEnd();
-					}
-					upload.SaveFile(chunk);
-				});
-				req.on('end', _onEnd);
-			} else {
-				var postdata = "";
-				req.on("data", function(chunk){
-					postdata += chunk;
-				});
-				req.on("end", function(){
-					req.Form = query.parse(postdata);
-					return _LoadPage(function(rBody) {
-						return _Output(rBody);
-					});
-				});
 			}
 		} else {
 			return _LoadPage(function(rBody) {
