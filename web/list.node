@@ -38,7 +38,7 @@ var Name = "模版";
 	<ul>
 <%
 for(var i in list) {
-	echo("<li>%s+" + i + ":" + list[i] + "</li>", Cookies('key'));
+	print("<li>%s+" + i + ":" + list[i] + "</li>", Cookies('key'));
 }
 Response.Write(Application('sys'));
 Application.del('sys');

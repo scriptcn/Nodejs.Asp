@@ -130,17 +130,108 @@ function tpl(_req, _res) {
 			}
 			if(cfg.scriptFolder.test(file)) {
 				Sys.log("%s\t%s\t%s\t%s", Sys.date(), Sys.addr(req), req.url, req.method);
-				data = _Parse(data.toString());	
+				return _Parse(data.toString(), function(re) {
+					return _callBack({
+						'code' : 200, 
+						'head' : {'Content-Type' : Sys.type(file), 'cache-Control' : 'no-cache'},
+						'body' : re
+					});
+				});	
+			} else {
+				if(cfg.cacheSuffix.test(file)) {
+					_PAGE_.cache[file] = data;
+					return _callBack({
+						'code' : 200, 
+						'head' : {'Content-Type' : Sys.type(file)},
+						'body' : data
+					});
+				}
 			}
-			if(cfg.cacheSuffix.test(file)) {
-				_PAGE_.cache[file] = data;
-			}
-			return _callBack({
-				'code' : 200, 
-				'head' : {'Content-Type' : Sys.type(file), 'cache-Control' : 'no-cache'},
-				'body' : data
-			});
 		});
+	}
+	
+	function _Parse(data, callBack) {
+		var re = [], sTag = cfg.scriptTag, iTag = cfg.includeTag, print;
+		var Request = req, Response = res, head = {};
+		Response.setHeaders = function(setHead) {
+			if(setHead['Set-Cookie']) {
+				head['Set-Cookie'] = head['Set-Cookie'] || [];
+				head['Set-Cookie'] = head['Set-Cookie'].concat(setHead['Set-Cookie']);
+			} else {
+				head = setHead;
+			}
+		}
+		var Application = _Application;
+		Application.del = function(k) { return Application(k, '', 'del');}
+		var Cookies = Request.Cookies = new _Cookies(Response);
+		Cookies.del = function(k) {return Cookies(k, 'del');}
+		var Session = new _Session(Cookies);
+		Session.del = function(k) {return Session(k, null, 'del');}
+		Request['addr'] = Sys.addr(req);
+		Response.Write = print = echo;
+		Response.Clear = clear;
+		Response.End = exit;
+		var endLine = '#' + Sys.md5(Sys.guid()) + '#';
+		
+		function clear() {
+			re.length = 0;
+		}
+		function exit(str) {
+			if(str) re.push(str);
+			re.push(endLine);
+		}
+		function echo () {
+			var args = arguments, i = 0;
+			return re.push(!args[1] ? args[0] : args[0].replace(/%s/g, function() {
+				return args[++ i];
+			}));
+		}
+		function aSync (kv) {
+			var k = kv;
+			aSync[k] = re.push('') - 1;
+			this.echo = function () {
+				var args = arguments, i = 0;
+				return re[aSync[k]] += (!args[1] ? args[0] : args[0].replace(/%s/g, function() {
+					return args[++ i];
+				}) + '\r\n');
+			}
+			this.end = function () {
+				delete aSync[k];
+			}
+		}
+		function reIsOver(){
+			for(var i in aSync) {
+				return false;
+			}
+			return true;
+		}
+		try {
+			eval(data.replace(new RegExp(iTag[0] + '(\'|")([^\'"]+)\\1;?' + iTag[1], 'gi'), function(a, b, c){
+				return fs.readFileSync(Sys.realPath(cfg.rootPath, c));
+			}).replace(new RegExp(sTag[0] + '=([^;%]+);?' + sTag[1] + '|{\\$([^;}]+);?}', 'g'), function(a, b, c) {
+				return "<%echo(" + (b || c) + ");%>";
+			}).replace(new RegExp('(^|' + sTag[1] + ')([\\s\\S]*?)[\\r\\n]*(' + sTag[0] + '|$)', 'g'), function(a, b, c) {
+				return !c ? '' : 'echo("' + c.replace(/"/g, '\\"').replace(/\r\n/g, '\\r\\n') + '");';
+			}));
+		} catch(e) {
+			re = ['Page error!', Request.url, e.name, e.message];
+			return callBack(re.join('\r\n'));
+		}
+		var outTime = new Date();
+		var intVal = setInterval(function(){
+			if(!reIsOver()){
+				if(new Date() - outTime > 5000) {
+					clearInterval(intVal);
+					return callBack('Request timeout!');
+				}
+				console.log(new Date());
+			} else {
+				clearInterval(intVal);
+				re = re.join('');
+				_SetHeader({'head' : head});
+				return callBack((cfg.minSource ? re.replace(/\r\n|\t/g, '') : re).split(endLine)[0]);
+			}
+		}, 10);
 	}
 	
 	function _Cookies(Res) {
@@ -183,58 +274,6 @@ function tpl(_req, _res) {
 		} else {
 			_PAGE_.memory[k] = v;
 		}
-	}
-	
-	function _Parse(data) {
-		var re = [], sTag = cfg.scriptTag, iTag = cfg.includeTag;
-		var Request = req, Response = res, head = {};
-		Response.setHeaders = function(setHead) {
-			if(setHead['Set-Cookie']) {
-				head['Set-Cookie'] = head['Set-Cookie'] || [];
-				head['Set-Cookie'] = head['Set-Cookie'].concat(setHead['Set-Cookie']);
-			} else {
-				head = setHead;
-			}
-		}
-		var Application = _Application;
-		Application.del = function(k) { return Application(k, '', 'del');}
-		var Cookies = Request.Cookies = new _Cookies(Response);
-		Cookies.del = function(k) {return Cookies(k, 'del');}
-		var Session = new _Session(Cookies);
-		Session.del = function(k) {return Session(k, null, 'del');}
-		Request['addr'] = Sys.addr(req);
-		Response.Write = echo;
-		Response.Clear = clear;
-		Response.End = exit;
-		var endLine = '#' + Sys.md5(Sys.guid()) + '#';
-		
-		function clear() {
-			re.length = 0;
-		}
-		function exit(str) {
-			if(str) re.push(str);
-			re.push(endLine);
-		}
-		function echo () {
-			var args = arguments, i = 0;
-			return re.push(!args[1] ? args[0] : args[0].replace(/%s/g, function() {
-				return args[++ i];
-			}));
-		}
-		try {
-			eval(data.replace(new RegExp(iTag[0] + '(\'|")([^\'"]+)\\1;?' + iTag[1], 'gi'), function(a, b, c){
-				return fs.readFileSync(Sys.realPath(cfg.rootPath, c));
-			}).replace(new RegExp(sTag[0] + '=([^;%]+);?' + sTag[1] + '|{\\$([^;}]+);?}', 'g'), function(a, b, c) {
-				return "<%echo(" + (b || c) + ");%>";
-			}).replace(new RegExp('(^|' + sTag[1] + ')([\\s\\S]*?)[\\r\\n]*(' + sTag[0] + '|$)', 'g'), function(a, b, c) {
-				return !c ? '' : 'echo("' + c.replace(/"/g, '\\"').replace(/\r\n/g, '\\r\\n') + '");';
-			}));
-		} catch(e) {
-			re = ['Page error!', Request.url, e.name, e.message];
-		}
-		re = re.join('');
-		_SetHeader({'head' : head});
-		return (cfg.minSource ? re.replace(/\r\n|\t/g, '') : re).split(endLine)[0];
 	}
 }
 //upload
