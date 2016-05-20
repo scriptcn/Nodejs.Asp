@@ -10,8 +10,8 @@ a:hover {text-decoration: underline;color:red;}
 .head sub {background:#aaa;color:#fff;}
 .menu {background:#f1f1f1;height:50px;margin:0 auto 10px;padding:5px auto;border-bottom:1px solid #ddd;}
 .menu ul {width:80%;text-align:left;margin:0 auto;}
-.menu li {float:left;line-height:50px;padding-right:20px;font-size:17px;border-left:2px solid #ddd;text-indent:20px;font-weight:bold;}
-.menu .r {border-right:2px solid #ddd;}
+.menu li {float:left;line-height:50px;padding-right:20px;font-size:17px;border-left:1px solid #ddd;text-indent:20px;font-weight:bold;}
+.menu .r {border-right:1px solid #ddd;}
 .main {width:80%;text-align:left;margin:0 auto 10px;}
 .foot {text-align:center;line-height:50px;background:#f3f3f3;font-size:11px;border-top:1px solid #ddd;}
 .pre {margin:0;background:#f9f9f9;border:1px solid #ddd;padding:5px;line-height:150%;}

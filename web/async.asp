@@ -14,32 +14,30 @@ var Name = "异步";
 	<div class="pre">
 <%
 echo('<dl>');
-var flist = new aSync('flist');
+var flist = new aSync();
 fs.readdir('./', function(e, r){
 	r.forEach(function(v, k) {
 		fs.stat('./' + v, function(e, sv) {
 			flist.echo('<dt>./%s</dt>', v);
-			for(var i in sv) {
-				flist.echo('<dd>%s:%s</dd>', i, sv[i]);
-			}
+			flist.echo('<dd>isDirectory:%s,isFile:%s,size:%s</dd>', sv.isDirectory(), sv.isFile(), sv.size);
 			if(r.length - 1 === k) {
-				flist.end();
+				flist.close();
 			}
 		});
 	});
 });
 echo('</dl>');
 echo('<dl>');
-var slist = new aSync('slist');
+var slist = new aSync();
 fs.readdir('./system/', function(e, r){
 	r.forEach(function(v, k) {
 		fs.stat('./system/' + v, function(e, sv) {
 			slist.echo('<dt>./system/%s</dt>', v);
-			for(var i in sv) {
-				slist.echo('<dd>%s:%s</dd>', i, sv[i]);
-			}
+			slist.echo('<dd>isDirectory:%s,isFile:%s,size:%s</dd>', sv.isDirectory(), sv.isFile(), sv.size);
 			if(r.length - 1 === k) {
-				slist.end();
+				//这里有BUG
+				console.log(r.length + "===" + k);
+				slist.close();
 			}
 		});
 	});

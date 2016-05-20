@@ -10,7 +10,7 @@ var fs = require('fs'),
 		'sess' : {},
 		'memory' : {}
 	};
-	//runInNewContext
+	
 //tpl
 function tpl(_req, _res) {
 	var req = _req, res = _res, sys, callBack, file, _this = this, sys = Sys;
@@ -27,7 +27,7 @@ function tpl(_req, _res) {
 		'scriptFolder'	: new RegExp('^(manage\\\\)?\\w+\\.(asp|node)$', 'i'),//linux is '\/'
 		'cacheSuffix'	: new RegExp('\\.(js|css|jpg|gif|png)$', 'i'),
 		'upfileSuffix'	: new RegExp('^(rar|zip|jpg|jpeg|gif|png)$', 'i'),
-		'upfileNotCode'	: new RegExp('(eval|execute|function|form|querystring)', 'i')
+		'upfileNotCode'	: false	//new RegExp('(eval|execute|function|form|querystring)', 'i')
 	};
 	var header = {
 		'code' : 404,
@@ -57,6 +57,7 @@ function tpl(_req, _res) {
 		callBack = _callBack;
 		var urls = url.parse(req.url, true);
 		file = urls.pathname == '/' ? cfg.indexPage : urls.pathname;
+		file == '/favicon.ico' && res.end();
 		/^\/([^\/]+\/)?(\w+)$/.test(file) && (file += cfg.notSuffix);
 		file = Sys.realPath(cfg.rootPath, file);
 		req.QueryString = urls.query;
@@ -182,20 +183,20 @@ function tpl(_req, _res) {
 		}
 		function echo () {
 			var args = arguments, i = 0;
-			return re.push(!args[1] ? args[0] : args[0].replace(/%s/g, function() {
+			return re.push(args.length == 1 ? args[0] : args[0].replace(/%s/g, function() {
 				return args[++ i];
 			}));
 		}
-		function aSync (kv) {
-			var k = kv;
+		function aSync () {
+			var k = Sys.md5(Sys.guid());
 			aSync[k] = re.push('') - 1;
 			this.echo = function () {
 				var args = arguments, i = 0;
-				return re[aSync[k]] += (!args[1] ? args[0] : args[0].replace(/%s/g, function() {
+				return re[aSync[k]] += (args.length == 1 ? args[0] : args[0].replace(/%s/g, function() {
 					return args[++ i];
 				}) + '\r\n');
 			}
-			this.end = function () {
+			this.close = function () {
 				delete aSync[k];
 			}
 		}
@@ -340,7 +341,7 @@ function Upload (spt, cfg, callBack) {
 		if(/^[\w-]+$/.test(nowFilePath)) {
 			return _this.Form[nowFilePath].push(chunk);
 		} else {
-			if(notCode.test(chunk.toString())) {
+			if(notCode && notCode.test(chunk.toString())) {
 				callBack({'error' : 'Upload is error{009}'});
 				return false;
 			}
@@ -409,9 +410,9 @@ var Sys = {
 		var s = !args[1] ? args[0] : args[0].replace(/%s/g, function() {
 			return args[++ i];
 		});
-		fs.writeFile('../tpl.log', s + '\r\n', {'flag' : 'a'}, function(e, r) {
+		//fs.writeFile('../tpl.log', s + '\r\n', {'flag' : 'a'}, function(e, r) {
 			return console.log(s);
-		});
+		//});
 	},
 	
 	'type' : function(s) {
@@ -420,6 +421,7 @@ var Sys = {
 			'swf' : 'application/x-shockwave-flash',
 			'xhtml' : 'application/xhtml+xml',
 			'zip' : ['application/x-zip', 'application/zip', 'application/x-zip-compressed'],
+			'rar' : 'application/x-rar-compressed',
 			'mp3' : ['audio/mpeg', 'audio/mpg', 'audio/mpeg3', 'audio/mp3'],
 			'bmp' : ['image/bmp', 'image/x-windows-bmp'],
 			'gif' : 'image/gif',
@@ -444,6 +446,7 @@ var Sys = {
 			'xlsx' : ['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'application/zip'],
 			'word' : ['application/msword', 'application/octet-stream'],
 			'xl' : 'application/excel',
+			'ico' : 'application/octet-stream',
 			'json' : ['application/json', 'text/json']
 		};
 		var rex = /[^\.]*\.(\w+)$/;
