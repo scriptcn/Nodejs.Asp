@@ -14,7 +14,7 @@ $(function(){
 				return "<font color='#ccc'><i>" + b + "</i></font>" + c;
 			});
 		}).replace(/(.*?)<br[^>]*>|(.+?)$/g, function(a, b, c) {
-			return "<tr><th valign='top'>" + ++ i + "</th><td>" + (b || c) + "</td></tr>";
+			return "<tr><th valign='top'>" + ++ i + "</th><td>" + (b || c || '') + "</td></tr>";
 		}) + '</table>';
 	});
 });
