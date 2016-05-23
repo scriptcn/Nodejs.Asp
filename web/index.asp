@@ -97,7 +97,6 @@ var Name = "关于";
 		<dd>var io = require('socket.io');</dd>
 	<dt>Upload:</dt>
 		<dd>无组件文件上传，支持多文件，可查看主页提供的<a href='upload'>DEMO页面</a></dd>
-	</dl>
 	<dt>Sync:</dt>
 		<dd>伪同步输出方式：(应用场景：仅做业务逻辑处理、输出，不支持变量赋值)</dd>
 		<dd>var async = new aSync();	//初始化一个异步操作<br />async.echo('string%s', 'a');	//同步输出<br />async.close();	//关闭</dd>
