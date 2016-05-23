@@ -79,7 +79,7 @@ function tpl(_req, _res) {
 						req.Form = isDestroy || upload.Form;
 						upload = null;
 						return _LoadPage(function(rBody) {
-							Sys.log("%s\t%s\t%s\t%s", Sys.date(), Sys.addr(req), req.url, req.Form.error);
+							Sys.log("%s\t%s\t%s\t%s", Sys.date(), Sys.addr(req), req.url, req.Form);
 							return _Output(rBody);
 						});
 					}
@@ -192,16 +192,26 @@ function tpl(_req, _res) {
 			aSync[k] = re.push('') - 1;
 			this.echo = function () {
 				var args = arguments, i = 0;
-				return re[aSync[k]] += (args.length == 1 ? args[0] : args[0].replace(/%s/g, function() {
-					return args[++ i];
-				}) + '\r\n');
+				try {
+					re[aSync[k]] += (args.length == 1 ? args[0] : args[0].replace(/%s/g, function() {
+						return args[++ i];
+					}) + '\r\n');
+				} catch(e) {
+					return console.log('re is error!');
+				}
 			}
 			this.close = function () {
-				delete aSync[k];
+				//process.nextTick
+				//return setImmediate(function () {
+					delete aSync[k];
+				//});
 			}
 		}
 		function reIsOver(){
 			for(var i in aSync) {
+				return false;
+			}
+			if(re[re.length - 1].indexOf('</html>') === -1) {
 				return false;
 			}
 			return true;
@@ -218,6 +228,7 @@ function tpl(_req, _res) {
 			re = ['Page error!', Request.url, e.name, e.message];
 			return callBack(re.join('\r\n'));
 		}
+		
 		var outTime = new Date();
 		var intVal = setInterval(function(){
 			if(!reIsOver()){

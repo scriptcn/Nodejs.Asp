@@ -96,13 +96,18 @@ var Name = "关于";
 		<dd>可以在页面直接使用require方法，支持node_modules和.js扩展。如：</dd>
 		<dd>var io = require('socket.io');</dd>
 	<dt>Upload:</dt>
-		<dd>无组件文件上传，支持多文件，可查看本站提供的<a href='upload'>DEMO页面</a></dd>
+		<dd>无组件文件上传，支持多文件，可查看主页提供的<a href='upload'>DEMO页面</a></dd>
+	</dl>
+	<dt>Sync:</dt>
+		<dd>伪同步输出方式：(应用场景：仅做业务逻辑处理、输出，不支持变量赋值)</dd>
+		<dd>var async = new aSync();	//初始化一个异步操作<br />async.echo('string%s', 'a');	//同步输出<br />async.close();	//关闭</dd>
+		<dd>callBack方式：(应用场景：原生书写模式，可以体验异步所有功能，但必须将剩余输出代码全部包含在callBack函数体内)</dd>
+		<dd>可查看主页提供的<a href='async'>DEMO页面</a></dd>
 	</dl>
 </div>
 <h2><label>Nodejs.Asp</label>目前未实现的有哪些？</h2>
 <div class='pre'>
 	<label>Nodejs.Asp</label>不支持ActiveX控件，但Nodejs拥有强大的第三方node_modules的支持，足以弥补不支持ActiveX的遗憾。
-	不支持异步调用回调函数输出到页面，支持console输出到控制台。建议使用同步操作。
 </div>
 <h3>感谢您的阅读！</h3>
 	<h2>Source:</h2>

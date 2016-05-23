@@ -16,37 +16,45 @@ var Name = "异步";
 	<h2>FileList:</h2>
 	<div class="pre">
 <%
-echo('<dl>');
 var flist = new aSync();
-fs.readdir('./', function(e, r){
-	r.forEach(function(v, k) {
-		console.log('加上这一句就好了，为何？');
-		fs.stat('./' + v, function(e, sv) {
-			flist.echo('<dt>./%s</dt>', v);
-			flist.echo('<dd>isDirectory:%s,isFile:%s,size:%s</dd>', sv.isDirectory(), sv.isFile(), sv.size);
-			if(r.length - 1 === k) {
-				flist.close();
+(function showFlist(path, callBack, finish) {
+	flist.echo('<dl>');
+	fs.readdir(path, function(e, r){
+		(function Next(i) {
+			if(i < r.length) {
+				var newPath = path + '/' + r[i ++];
+				fs.stat(newPath, function(e, sv) {
+					if(sv.isDirectory()) {
+						flist.echo('<dt>%s</dt>', newPath);
+						showFlist(newPath, callBack, function() {
+							Next(i);
+						});
+					} else {
+						flist.echo('<dt>%s</dt>', newPath);
+						flist.echo('<dd>isDirectory:%s,isFile:%s,size:%s</dd>', sv.isDirectory(), sv.isFile(), sv.size);
+						callBack(function() {
+							Next(i);
+						});
+					}
+				});
+			} else {
+				finish && finish();
 			}
-		});
+		})(0);
 	});
+})('.', function(callBack) {
+	callBack();
+}, function() {
+	flist.echo('</dl>');
+	flist.close();
 });
-echo('</dl>');
-echo('<dl>');
-var slist = new aSync();
+
 fs.readdir('./system/', function(e, r){
-	r.forEach(function(v, k) {
-		console.log('加上这一句就好了，为何？');
-		fs.stat('./system/' + v, function(e, sv) {
-			slist.echo('<dt>./system/%s</dt>', v);
-			slist.echo('<dd>isDirectory:%s,isFile:%s,size:%s</dd>', sv.isDirectory(), sv.isFile(), sv.size);
-			if(r.length - 1 === k) {
-				//这里有BUG
-				slist.close();
-			}
-		});
-	});
+	callFunc(r);
 });
-echo('</dl>');
+
+function callFunc(r) {
+	echo(r.join(','));
 %>
 	</div>
 	<h2>Source:</h2>
@@ -55,3 +63,4 @@ echo('</dl>');
 <!--include file="foot.html"-->
 </body>
 </html>
+<%}%>
