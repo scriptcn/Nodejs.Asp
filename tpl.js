@@ -3,8 +3,10 @@
 var fs = require('fs'),
 	url = require('url'),
 	crypto = require('crypto'),
+	util = require('util'),
 	query = require('querystring'),
 	path = require('path'),
+	adodb = require('./adodb'),
 	_PAGE_ = {
 		'cache' : {},
 		'sess' : {},
@@ -21,11 +23,11 @@ function tpl(_req, _res) {
 		'minSource'	: false,
 		'indexPage'	: '/index.asp',
 		'notSuffix'	: '.asp',
-		'contentMax'	: 2 * 1024 * 1024,
+		'contentMax'	: 10 * 1024 * 1024,
 		'scriptTag' 	: new Array('<%', '%>'),
 		'includeTag'	: new Array('<!--include file=', '-->'),
 		'scriptFolder'	: new RegExp('^(manage\\\\)?\\w+\\.(asp|node)$', 'i'),//linux is '\/'
-		'cacheSuffix'	: new RegExp('\\.(css|jpg|gif|png)$', 'i'),
+		'cacheSuffix'	: new RegExp('\\.(css|js|jpg|gif|png)$', 'i'),
 		'upfileSuffix'	: new RegExp('^(rar|zip|jpg|jpeg|gif|png)$', 'i'),
 		'upfileNotCode'	: false	//new RegExp('(eval|execute|function|form|querystring)', 'i')
 	};
@@ -187,13 +189,13 @@ function tpl(_req, _res) {
 				return args[++ i];
 			}));
 		}
-		function aSync () {
+		function Sync () {
 			var k = Sys.md5(Sys.guid());
-			aSync[k] = re.push('') - 1;
+			Sync[k] = re.push('') - 1;
 			this.echo = function () {
 				var args = arguments, i = 0;
 				try {
-					re[aSync[k]] += (args.length == 1 ? args[0] : args[0].replace(/%s/g, function() {
+					re[Sync[k]] += (args.length == 1 ? args[0] : args[0].replace(/%s/g, function() {
 						return args[++ i];
 					}) + '\r\n');
 				} catch(e) {
@@ -203,12 +205,12 @@ function tpl(_req, _res) {
 			this.close = function () {
 				//process.nextTick
 				//return setImmediate(function () {
-					delete aSync[k];
+					delete Sync[k];
 				//});
 			}
 		}
 		function reIsOver(){
-			for(var i in aSync) {
+			for(var i in Sync) {
 				return false;
 			}
 			if(re[re.length - 1].indexOf('</html>') === -1) {
@@ -236,7 +238,7 @@ function tpl(_req, _res) {
 					clearInterval(intVal);
 					return callBack('Request timeout!');
 				}
-				console.log(new Date());
+				//console.log(new Date());
 			} else {
 				clearInterval(intVal);
 				re = re.join('');

@@ -96,12 +96,12 @@ var Name = "关于";
 		<dd>可以在页面直接使用require方法，支持node_modules和.js扩展。如：</dd>
 		<dd>var io = require('socket.io');</dd>
 	<dt>Upload:</dt>
-		<dd>无组件文件上传，支持多文件，可查看主页提供的<a href='upload'>DEMO页面</a></dd>
+		<dd>无组件文件上传，支持多文件，可查看<a href='upload'>DEMO页面</a></dd>
 	<dt>Sync:</dt>
 		<dd>伪同步输出方式：(应用场景：仅做业务逻辑处理、输出，不支持变量赋值)</dd>
 		<dd>var async = new aSync();	//初始化一个异步操作<br />async.echo('string%s', 'a');	//同步输出<br />async.close();	//关闭</dd>
-		<dd>callBack方式：(应用场景：原生书写模式，可以体验异步所有功能，但必须将剩余输出代码全部包含在callBack函数体内)</dd>
-		<dd>可查看主页提供的<a href='async'>DEMO页面</a></dd>
+		<dd>callBack方式：(应用场景：原生模式，可以体验异步所有功能，但必须将剩余输出代码全部包含在callBack函数体内)</dd>
+		<dd>可查看<a href='async'>DEMO页面</a></dd>
 	</dl>
 </div>
 <h2><label>Nodejs.Asp</label>目前未实现的有哪些？</h2>
@@ -110,7 +110,7 @@ var Name = "关于";
 </div>
 <h3>感谢您的阅读！</h3>
 	<h2>Source:</h2>
-	<div class="pre code"><%echo(fs.readFileSync('index.asp').toString().replace(/</g, "&lt;").replace(/\r\n/g, "<br />").replace(/\t/g, Array(8).join("&nbsp;")));%></div>
+	<div class="pre code"><%echo(fs.readFileSync(file).toString().replace(/</g, "&lt;"));%></div>
 </div>
 <!--include file="foot.html"-->
 </body>

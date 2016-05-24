@@ -16,7 +16,7 @@ a:hover {text-decoration: underline;color:red;}
 .foot {text-align:center;line-height:50px;background:#f3f3f3;font-size:11px;border-top:1px solid #ddd;}
 .pre {margin:0;background:#fdfdfd;border:1px solid #ddd;padding:5px;line-height:150%;}
 dl, dt, dd {margin:0;padding:0}
-dt {color:blue;line-height:50px;font-size:18px;}
+dt {color:green;font-weight:bold;line-height:50px;font-size:18px;}
 dd {margin:5px 30px;background:#fafafa;padding:5px;list-style:none;}
 label {color:green;font-weight:bold;}
 h2 {border-left:5px solid #ddd;text-indent:10px;}
