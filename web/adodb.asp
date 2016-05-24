@@ -21,7 +21,7 @@ var Name = "adodb";
 <%
 var sync = new Sync();
 var mdb = new adodb.page(Request.QueryString["page"], 10);
-mdb.Query('SELECT * FROM `Idiom` ORDER BY ID ASC', function(data, page) {
+mdb.Query('SELECT * FROM `Idiom` WHERE ID < 1000 ORDER BY ID ASC', function(data, page) {
 	//sync.echo(util.inspect(page));
 	sync.echo('<div class="page">%s</div>', page);
 	sync.echo('<dl>');

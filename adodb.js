@@ -23,7 +23,7 @@ module.exports = {
 					newSql = newSql.replace(/FROM ([^\s]+)(.*)$/i, function(a, b, c) {
 						return "FROM " + b + " WHERE `ID` " + (/DESC/i.test(c) ? "<" : ">") + 
 						" (SELECT " + (/DESC/i.test(c) ? 'MIN' : 'MAX') + 
-						"(`ID`) FROM (SELECT TOP " + (PageNo - 1) * PageSize + " `ID` FROM " + b + c + "))" + c;
+						"(`ID`) FROM (SELECT TOP " + (PageNo - 1) * PageSize + " `ID` FROM " + b + c + "))" + c.replace(/WHERE/i, 'AND');
 					});
 				}
 				conn.query(newSql).on('done', function(r) {
