@@ -6,7 +6,7 @@ var adodb = require('node-adodb'),
 	conn = adodb.open('Provider=Microsoft.Jet.OLEDB.4.0;Data Source=./data/data.mdb;'),
 	_this = this;
 	
-adodb.debug = false;	
+adodb.debug = false;
 module.exports = {
 	'conn' : conn,
 	'page' : function(PageNo, PageSize, PageUrl) {

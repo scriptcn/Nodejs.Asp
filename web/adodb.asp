@@ -16,7 +16,7 @@ var Name = "adodb";
 <body>
 <!--include file="head.html"-->
 <div class="main">
-	<h2>FileList:</h2>
+	<h2>DataList:</h2>
 	<div class="pre">
 <%
 var sync = new Sync();
