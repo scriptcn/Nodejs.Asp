@@ -9,7 +9,7 @@ var Name = "adodb";
 <style type="text/css">
 .page {width:100%;background:#fafafa;line-height:50px;text-align:center;}
 .page span {margin:2px;padding:5px;border:1px solid #ccc;}
-.page a:link, #pageShow a:visited {text-decoration:none;}
+.page a:link, .page a:visited {text-decoration:none;}
 .page a:hover {color:#cfcfcf;}
 </style>
 </head>
