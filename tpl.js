@@ -423,9 +423,9 @@ var Sys = {
 		var s = !args[1] ? args[0] : args[0].replace(/%s/g, function() {
 			return args[++ i];
 		});
-		//fs.writeFile('../tpl.log', s + '\r\n', {'flag' : 'a'}, function(e, r) {
+		fs.writeFile('../tpl.log', s + '\r\n', {'flag' : 'a'}, function(e, r) {
 			return console.log(s);
-		//});
+		});
 	},
 	
 	'type' : function(s) {

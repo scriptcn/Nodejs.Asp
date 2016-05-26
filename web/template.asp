@@ -64,7 +64,7 @@ echo(Application('sys') || "no");
 %>
 </div>
 	<h2>Source:</h2>
-	<div class="pre code"><%echo(fs.readFileSync(file).toString().replace(/</g, "&lt;"));%></div>
+	<div class="pre code"><%echo(fs.readFileSync(file).toString().replace(/</g, "&lt;").replace(/\r\n/g, '<br>').replace(/\t/g, Array(8).join("&nbsp;")));%></div>
 </div>
 <!--include file="foot.html"-->
 </body>
