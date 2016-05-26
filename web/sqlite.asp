@@ -16,8 +16,9 @@ if(Request.method == "POST") {
 	add.clear();
 	if(!/^\S{3,10}$/.test(username)) {
 		add.exit("名称限制为3-10位字符");
-	} else if(!/^[\s\S]{3,500}$/.test(username)) {
+	} else if(!/^[\s\S]{3,500}$/.test(content)) {
 		add.exit("内容限制为3-500位字符");
+		//sqlite.conn.run("DELETE FROM `Message` WHERE `ID` IN (4, 5)");
 	} else {
 		sqlite.conn.run("INSERT INTO `Message`(`Username`, `Timer`, `IPAddr`, `Content`) VALUES(?, ?, ?, ?);", [_unhtml(username), timer, addr, _unhtml(content)], function(e, r) {
 			if(this.lastID) {
@@ -46,18 +47,14 @@ if(Request.method == "POST") {
 <!--include file="head.html"-->
 <script type="text/javascript">
 function PostForm(o) {
-	try {
-		$.post('', $(o).serialize(), function(re){
-			if(re.indexOf('{') !== -1) {
-				alert(re);
-				location.reload();
-			} else {
-				alert(re);
-			}
-		}, "text");
-	} catch(e) {
-		console.log(e);
-	}
+	$.post('', $(o).serialize(), function(re){
+		if(re.indexOf('{') !== -1) {
+			alert(re);
+			location.reload();
+		} else {
+			alert(re);
+		}
+	}, "text");
 	return false;
 }
 </script>
@@ -72,7 +69,7 @@ db3.Query('SELECT * FROM `Message` ORDER BY `ID` DESC', function(data, page) {
 	sync.echo('<div class="page">%s</div>', page);
 	sync.echo('<dl>');
 	for(var i = 0; i < data.length; i ++) {
-		sync.echo("<dt>%s来自:%s,发表于:%s</dt><dd>%s</dd>", data[i].Username, data[i].IPAddr, data[i].Timer, data[i].Content.replace(/\r\n/gi, '<br />'));
+		sync.echo("<dt data-ID='%s'>%s来自:%s,发表于:%s</dt><dd>%s</dd>", data[i].ID, data[i].Username, data[i].IPAddr, data[i].Timer, data[i].Content.replace(/\r\n/gi, '<br />'));
 	}
 	sync.echo('</dl>');
 	sync.echo('<div class="page">%s</div>', page);
