@@ -7,6 +7,7 @@ var fs = require('fs'),
 	query = require('querystring'),
 	path = require('path'),
 	adodb = require('./adodb'),
+	sqlite = require('./sqlite'),
 	_PAGE_ = {
 		'cache' : {},
 		'sess' : {},
@@ -19,7 +20,7 @@ function tpl(_req, _res) {
 	var cfg = {
 		'rootPath' 	: './',
 		'upfilePath'	: './upfile/',
-		'serverName'	: 'BiyuanWebserver',
+		'serverName'	: 'Nodejs.Asp',
 		'minSource'	: false,
 		'indexPage'	: '/index.asp',
 		'notSuffix'	: '.asp',
@@ -201,6 +202,15 @@ function tpl(_req, _res) {
 				} catch(e) {
 					return console.log('re is error!');
 				}
+			}
+			this.clear = function(){
+				re.length = 0;
+				Sync[k] = re.push('') - 1;
+			}
+			this.exit = function(str) {
+				if(str) re[Sync[k]] += str;
+				re[Sync[k]] += endLine;
+				return this.close();
 			}
 			this.close = function () {
 				//process.nextTick
