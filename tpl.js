@@ -183,6 +183,7 @@ function tpl(_req, _res) {
 		function exit(str) {
 			if(str) re.push(str);
 			re.push(endLine);
+			return false;
 		}
 		function echo () {
 			var args = arguments, i = 0;
@@ -213,29 +214,25 @@ function tpl(_req, _res) {
 				return this.close();
 			}
 			this.close = function () {
-				//process.nextTick
-				//return setImmediate(function () {
-					delete Sync[k];
-				//});
+				delete Sync[k];
+				return false;
 			}
 		}
 		function reIsOver(){
 			for(var i in Sync) {
 				return false;
 			}
-			if(re[re.length - 1].indexOf('</html>') === -1) {
-				return false;
-			}
 			return true;
 		}
 		try {
-			eval(data.replace(new RegExp(iTag[0] + '(\'|")([^\'"]+)\\1;?' + iTag[1], 'gi'), function(a, b, c){
+			data = "(function() {" + data.replace(new RegExp(iTag[0] + '(\'|")([^\'"]+)\\1;?' + iTag[1], 'gi'), function(a, b, c){
 				return fs.readFileSync(Sys.realPath(cfg.rootPath, c));
 			}).replace(new RegExp(sTag[0] + '=([^;%]+);?' + sTag[1] + '|{\\$([^;}]+);?}', 'g'), function(a, b, c) {
 				return "<%echo(" + (b || c) + ");%>";
 			}).replace(new RegExp('(^|' + sTag[1] + ')([\\s\\S]*?)[\\r\\n]*(' + sTag[0] + '|$)', 'g'), function(a, b, c) {
 				return !c ? '' : 'echo("' + c.replace(/"/g, '\\"').replace(/\r\n/g, '\\r\\n') + '");';
-			}));
+			}) + "})()";
+			eval(data);
 		} catch(e) {
 			re = ['Page error!', Request.url, e.name, e.message];
 			return callBack(re.join('\r\n'));
@@ -248,7 +245,6 @@ function tpl(_req, _res) {
 					clearInterval(intVal);
 					return callBack('Request timeout!');
 				}
-				//console.log(new Date());
 			} else {
 				clearInterval(intVal);
 				re = re.join('');

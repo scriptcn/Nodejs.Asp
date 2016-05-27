@@ -5,7 +5,6 @@ var Name = "表单";
 if(Request.method == "POST") {
 	Request.Form.addr = Request['addr'];
 	Request.Form.time = Sys.date();
-	//fs.writeFileSync("log.txt", util.inspect(Request.Form) + "\r\n", {'flag' : 'a'});
 	Response.Clear();
 	Response.Write(JSON.stringify(Request.Form));
 	Response.End();

@@ -7,6 +7,11 @@ function _unhtml(str) {
 		return "&#" + b.charCodeAt(0) + ";";
 	});
 }
+function _hideIP(str) {
+	return str.replace(/(\.\d+\.\d+)$/, function(a, b) {
+		return b.replace(/\d/g, '*');
+	});
+}
 if(Request.method == "POST") {
 	var username = Request.Form['user'];
 	var content = Request.Form['content'];
@@ -14,22 +19,22 @@ if(Request.method == "POST") {
 	var addr = Request['addr'];
 	var add = new Sync();
 	add.clear();
-	if(!/^\S{3,10}$/.test(username)) {
-		add.exit("名称限制为3-10位字符");
-	} else if(!/^[\s\S]{3,500}$/.test(content)) {
-		add.exit("内容限制为3-500位字符");
-		//sqlite.conn.run("DELETE FROM `Message` WHERE `ID` IN (4, 5)");
-	} else {
-		sqlite.conn.run("INSERT INTO `Message`(`Username`, `Timer`, `IPAddr`, `Content`) VALUES(?, ?, ?, ?);", [_unhtml(username), timer, addr, _unhtml(content)], function(e, r) {
-			if(this.lastID) {
-				sqlite.conn.get("SELECT * FROM `Message` WHERE `ID` = ?", [this.lastID], function(e, r) {
-					add.exit(JSON.stringify(r));
-				});
-			} else {
-				add.exit('留言失败');
-			}
-		});
+	//sqlite.conn.run("DELETE FROM `Message` WHERE `ID` IN (4, 5)");
+	if(!/^\S{2,10}$/.test(username)) {
+		return add.exit("名称限制为2-10位字符");
 	}
+	if(!/^[\s\S]{3,500}$/.test(content)) {
+		return add.exit("内容限制为3-500位字符");
+	}
+	sqlite.conn.run("INSERT INTO `Message`(`Username`, `Timer`, `IPAddr`, `Content`) VALUES(?, ?, ?, ?);", [_unhtml(username), timer, addr, _unhtml(content)], function(e, r) {
+		if(this.lastID) {
+			sqlite.conn.get("SELECT * FROM `Message` WHERE `ID` = ?", [this.lastID], function(e, r) {
+				return add.exit(JSON.stringify(r));
+			});
+		} else {
+			return add.exit('留言失败');
+		}
+	});
 }
 %><!DOCTYPE html>
 <head>
@@ -66,10 +71,9 @@ var sync = new Sync();
 sync.echo('<dl>');
 var db3 = new sqlite.page(Request.QueryString["page"], 10);
 db3.Query('SELECT * FROM `Message` ORDER BY `ID` DESC', function(data, page) {
-	sync.echo('<div class="page">%s</div>', page);
 	sync.echo('<dl>');
 	for(var i = 0; i < data.length; i ++) {
-		sync.echo("<dt data-ID='%s'>%s来自:%s,发表于:%s</dt><dd>%s</dd>", data[i].ID, data[i].Username, data[i].IPAddr, data[i].Timer, data[i].Content.replace(/\r\n/gi, '<br />'));
+		sync.echo("<dt data-ID='%s'>网友<font color='blue'>%s</font>来自:%s,发表于:%s</dt><dd>%s</dd>", data[i].ID, data[i].Username, _hideIP(data[i].IPAddr), data[i].Timer, data[i].Content.replace(/\r\n/gi, '<br />'));
 	}
 	sync.echo('</dl>');
 	sync.echo('<div class="page">%s</div>', page);

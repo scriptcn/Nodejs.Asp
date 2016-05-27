@@ -7,7 +7,7 @@ if(Request.method == "POST") {
 	Response.setHeaders({"Content-Type" : sys.type('.html')});
 	Response.Clear();
 	Response.Write("<script type='text/javascript'>parent.callBack('" + JSON.stringify(Request.Form).replace(/'/g, "\\'") + "');</script>");
-	Response.End();
+	return Response.End();
 }
 %>
 <!DOCTYPE html>

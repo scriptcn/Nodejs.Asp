@@ -55,19 +55,19 @@ var Name = "关于";
 		<dd>&lt% Nodejs code %&gt;</dd>
 		<dd>或者自定义引用格式如：&lt;? ... ?&gt;</dd>
 	<dt>Application:</dt>
-		<dd>Application(key, value);	//赋值</dd>
-		<dd>Application(key);	//读取</dd>
-		<dd>Application.del(key);	//删除</dd>
-		<dd>Application.del();	//清空Application对象</dd>
+		<dd>Application(key, value);	赋值</dd>
+		<dd>Application(key);	读取</dd>
+		<dd>Application.del(key);	删除</dd>
+		<dd>Application.del();	清空Application对象</dd>
 	<dt>Session:</dt>
-		<dd>Session(key, value);	//赋值</dd>
-		<dd>Session(key);	//读取</dd>
-		<dd>Session.del(key);	//删除</dd>
-		<dd>Session.del();	//清空用户Session对象</dd>
+		<dd>Session(key, value);	赋值</dd>
+		<dd>Session(key);	读取</dd>
+		<dd>Session.del(key);	删除</dd>
+		<dd>Session.del();	清空用户Session对象</dd>
 	<dt>Cookie:</dt>
-		<dd>Cookie(key, value);	//赋值</dd>
-		<dd>Cookie(key);	//读取</dd>
-		<dd>Cookie.del(key);	//删除</dd>
+		<dd>Cookie(key, value);	赋值</dd>
+		<dd>Cookie(key);	读取</dd>
+		<dd>Cookie.del(key);	删除</dd>
 	<dt>Request:</dt>
 		<dd>Request.QueryString是一个json对象，例如：{"action":"tpl","mode":"test"}</dd>
 		<dd>Request.Form是一个json对象，例如：{"user":"访客 ","age":"38","live":["上网","编程"],"city":"武汉","content":"这家伙很懒，什么都没说！","addr":"127.0.0.1"}</dd>
@@ -76,16 +76,16 @@ var Name = "关于";
 	<dt>Response:</dt>
 		<dd>Response.Write(注意w大写)，输出内容，等同于echo(<label>Nodejs.Asp</label>内置输出函数)</dd>
 		<dd>Response.Clear，清空缓冲区</dd>
-		<dd>Response.End，终止输出</dd>
+		<dd>Response.End，终止输出，建议使用<b>return Response.End();</b></dd>
 		<dd>Response.setHeaders，设置headers</dd>
 		<dd>Response.writeHead、Response.write、Response.end等参考Nodejs Response标准对象</dd>
 	<dt><label>Nodejs.Asp</label>内置方法</dt>
-		<dd>echo("string%sNumber%s", 'a', 1);	//输出，支持%s变量替换</dd>
-		<dd>clear();	//同Response.Clear</dd>
-		<dd>exit();	//同Response.End</dd>
-		<dd>Sys.date();	//服务器事件</dd>
-		<dd>Sys.md5(str);	//md5</dd>
-		<dd>Sys.guid();	//获取一个唯一值</dd>
+		<dd>echo("string%sNumber%s", 'a', 1);	输出，支持%s变量替换</dd>
+		<dd>clear();	同Response.Clear</dd>
+		<dd>exit();	同Response.End，建议使用<b>return exit();</b></dd>
+		<dd>Sys.date();	服务器事件</dd>
+		<dd>Sys.md5(str);	md5</dd>
+		<dd>Sys.guid();	获取一个唯一值</dd>
 		<dd>Sys.?更多扩展可参考源码</dd>
 	<dt>Nodejs系统对象</dt>
 		<dd>fs = require('fs')</dd>
@@ -99,9 +99,9 @@ var Name = "关于";
 		<dd>无组件文件上传，支持多文件，可查看<a href='upload'>DEMO页面</a></dd>
 	<dt>Sync:</dt>
 		<dd>伪同步输出方式：(应用场景：仅做业务逻辑处理、输出，不支持变量赋值)</dd>
-		<dd>var async = new aSync();	//初始化一个异步操作<br />async.echo('string%s', 'a');	//同步输出<br />async.close();	//关闭</dd>
+		<dd>var sync = new aSync();	 初始化一个异步操作<br />sync.echo('string%s', 'a');	同步输出<br />sync.close();	关闭<br />sync.end();	终止输出，建议使用<b>return sync.end();</b></dd>
 		<dd>callBack方式：(应用场景：原生模式，可以体验异步所有功能，但必须将剩余输出代码全部包含在callBack函数体内)</dd>
-		<dd>可查看<a href='async'>DEMO页面</a></dd>
+		<dd>可查看<a href='sync'>DEMO页面</a></dd>
 	</dl>
 </div>
 <h2><label>Nodejs.Asp</label>目前未实现的有哪些？</h2>
