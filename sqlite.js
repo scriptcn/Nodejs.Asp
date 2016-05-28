@@ -25,6 +25,10 @@ var conn = new sqlite3.Database('./data/guestbook.db3',  sqlite3.OPEN_READWRITE,
 	if(e) console.log(e);
 });
 
+process.on('exit', function() {
+	//conn.close();
+});
+
 module.exports = {
 	'conn' : conn,
 	'page' : function(PageNo, PageSize, PageUrl) {

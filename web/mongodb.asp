@@ -1,6 +1,6 @@
 <%
 var Title = "Nodejs.Asp";
-var Name = "Adodb";
+var Name = "Mongodb";
 %><!DOCTYPE html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -19,18 +19,29 @@ var Name = "Adodb";
 	<h2>DataList:</h2>
 	<div class="pre">
 <%
+var mongodb = require('mongodb');
+var server = new mongodb.Server('localhost', 27017, {auto_reconnect : true});
+var db = new mongodb.Db('nodejs', server);
+
 var sync = new Sync();
-var mdb = new adodb.page(Request.QueryString["page"], 10);
-mdb.Query('SELECT * FROM `Idiom` WHERE ID < 1000 ORDER BY ID ASC', function(data, page) {
-	//sync.echo(util.inspect(page));
-	sync.echo('<div class="page">%s</div>', page);
-	sync.echo('<dl>');
-	for(var i = 0; i < data.length; i ++) {
-		sync.echo('<dt data-id="%s">%s</dt><dd>%s</dd><dd>%s</dd><dd>%s</dd><dd>%s</dd>', data[i].ID, data[i].Title, data[i].Pinyin, data[i].Shiyi, data[i].From, data[i].Example);
-	}
-	sync.echo('</dl>');
-	sync.echo('<div class="page">%s</div>', page);
-	sync.close();
+db.open(function(r, db) {
+	//db.authenticate('root', 'root', function(){
+		db.createCollection('users', function(e, cln) {
+			cln.insert({'name' : Sys.guid(), 'age' : Math.random()});
+			cln.find().sort({_id : -1}).toArray(function(e, r) {
+				sync.echo('<dl>');
+				for(var i = 0; i < r.length; i ++) {
+					if(i == r.length - 1) {
+						cln.remove({_id : r[i]._id});
+					} else {
+						sync.echo("<dd>%s,%s,%s</dd>", r[i]._id, r[i].name, r[i].age);
+					}
+				}
+				sync.echo('</dl>');
+				sync.close();
+			});
+		});
+	//});
 });
 
 %>

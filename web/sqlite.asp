@@ -1,6 +1,6 @@
 <%
 var Title = "Nodejs.Asp";
-var Name = "sqlite";
+var Name = "Sqlite";
 
 function _unhtml(str) {
 	return !str ? '' : str.replace(/([<|>| ])/g, function(a, b) {
