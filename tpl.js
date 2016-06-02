@@ -28,7 +28,7 @@ function tpl(_req, _res) {
 		'scriptTag' 	: new Array('<%', '%>'),
 		'includeTag'	: new Array('<!--include file=', '-->'),
 		'scriptFolder'	: new RegExp('^(manage\\\\)?\\w+\\.(asp|node)$', 'i'),//linux is '\/'
-		'cacheSuffix'	: new RegExp('\\.(css|js|jpg|gif|png)$', 'i'),
+		'cacheSuffix'	: new RegExp('\\.(css|js|jpg|gif|png|ico)$', 'i'),
 		'upfileSuffix'	: new RegExp('^(rar|zip|jpg|jpeg|gif|png)$', 'i'),
 		'upfileNotCode'	: false	//new RegExp('(eval|execute|function|form|querystring)', 'i')
 	};
@@ -60,7 +60,7 @@ function tpl(_req, _res) {
 		callBack = _callBack;
 		var urls = url.parse(req.url, true);
 		file = urls.pathname == '/' ? cfg.indexPage : urls.pathname;
-		file == '/favicon.ico' && res.end();
+		if(file == '/favicon.ico') return;
 		/^\/([^\/]+\/)?(\w+)$/.test(file) && (file += cfg.notSuffix);
 		file = Sys.realPath(cfg.rootPath, file);
 		req.QueryString = urls.query;
